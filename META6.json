@@ -1,31 +1,25 @@
 {
-  "name": "App::Crag",
-  "description": "calculator using raku grammars",
-  "version": "0.0.11",
+  "name": "Contact::Name::LLM",
+  "description": "use LLM to get first and last",
+  "version": "0.0.1",
   "perl": "6.d",
   "authors": [
     "librasteve"
   ],
   "auth": "zef:librasteve",
-  "depends": [
-    "Physics::Measure",
-    "Physics::Constants",
-    "Physics::Navigation",
-    "Time::Duration::Parser"
-  ],
+  "depends": [],
   "build-depends": [],
   "test-depends": [],
   "provides": {
-    "App::Crag": "lib/App/Crag.rakumod"
+    "Contact::Name::LLM": "lib/Contact/Name/LLM.rakumod"
   },
   "resources": [],
   "license": "Artistic-2.0",
   "tags": [
-    "App",
-    "CLI",
-    "Physics",
-    "Navigation"
+    "Contact",
+    "Name",
+    "LLM"
   ],
   "api": "1",
-  "source-url": "git://github.com/librasteve/raku-App-Crag.git"
+  "source-url": "git://github.com/librasteve/raku-Contact-Name-LLM.git"
 }
