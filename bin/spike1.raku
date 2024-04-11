@@ -75,28 +75,6 @@ given $goal {
 #            '[["John", "Smith"], ["Kylie", "Minogue"]]'
 #        );
 
-#        my &fe = llm-example-function(
-#            ['John Smith', 'Kylie Minogue', 'Mikejennion', 'Andreaglenister'].&to-json =>
-#                        '[["John", "Smith"], ["Kylie", "Minogue"], ["Mike", "Jennion"], ["Andrea", "Glenister"]]'  ,
-#            hint => 'please convert this list of inputs to first name / last name',
-#            hint => 'no, Andreaglenister is wrong, should be Andrea Glenister, and so on',
-##            hint => 'Mikejennion is wrong, should be Mike Jennion, and so on',
-#
-#            #            hint => 'sometimes there is no space between first and last names',
-#        );
-
-#        my &fe = llm-example-function(
-#            ['John Smith', 'Kylie Minogue', 'Mikejennion', 'Andreaglenister'].&to-json =>
-#                '["John", "Kylie", "Mike", "Andrea"]'  ,
-#            hint => 'please extract valid first names from this list of inputs',
-#            hint => 'no, Andreaglenister is not a valid firstname, should be Andrea, and so on',
-##            hint => 'no, Garethaus is not a valid firstname, should be Gareth, and so on',
-##            hint => 'Mikejennion is wrong, should be Mike Jennion, and so on',
-##            hint => 'sometimes there is no space between first and last names',
-#       );
-#
-#        my @result = &fe( @data[^600].&to-json ).&from-json;
-
 
         my &fe = llm-example-function(
             ['tomp', 'Kylie.Minogue', 'Mikejennion', 'Andrea_glenister', 'david-bowie', 'J', 'Db', 'Stevec', 'Fionac'].&to-json =>
@@ -152,21 +130,6 @@ given $goal {
     }
 }
 
-
-
-#`[
-my @surrogates = 'John Smith', 'Kylie Minogue';
-
-#my &fe = llm-example-function( to-json(@surrogates) => 
-#    '[{"first_name": "John", "last_name": "Smith"} {"first_name": "Kylie", "last_name": "Minogue"}]'
-#);
-
-my &fe = llm-example-function( to-json(@surrogates) => 
-    '[["John", "Smith"], ["Kylie", "Minogue"]]'
-);
-
-ddt &fe(to-json(['Keanu Reeves', 'Mark Wahlberg'])).&from-json;
-#]
 
 
 
