@@ -7,6 +7,7 @@ use Text::CSV;
 use Net::Google::Sheets;
 
 my $name = 'reading-c2e-v2';
+my $email = 'Email';
 my $full = 'Full name';
 my $first = 'First name';
 my $last = 'Last name';
@@ -53,21 +54,15 @@ given $goal {
 
         my %col = @values[0;*] Z=> ^Inf;
 
-        my @data = @values[*;%col{$full}][1..*];
+        my @data = @values[*;%col{$email}][1..*];
 
         for @data -> $datum is rw {
             $datum ~~ s:g/'(' .* ')'//;       #rm anything in parens
+            $datum ~~ s:g/^ (.*?) '@' .* $/$0/;     #take lhs fo email
         }
 
 
         say @data;
-
-
-        my %fixes = (
-            Garethaus => 'Gareth',
-            Db => 'none',
-        );
-
 
 #        my @surrogates = 'John Smith', 'Kylie Minogue';
 
@@ -90,24 +85,70 @@ given $goal {
 #            #            hint => 'sometimes there is no space between first and last names',
 #        );
 
+#        my &fe = llm-example-function(
+#            ['John Smith', 'Kylie Minogue', 'Mikejennion', 'Andreaglenister'].&to-json =>
+#                '["John", "Kylie", "Mike", "Andrea"]'  ,
+#            hint => 'please extract valid first names from this list of inputs',
+#            hint => 'no, Andreaglenister is not a valid firstname, should be Andrea, and so on',
+##            hint => 'no, Garethaus is not a valid firstname, should be Gareth, and so on',
+##            hint => 'Mikejennion is wrong, should be Mike Jennion, and so on',
+##            hint => 'sometimes there is no space between first and last names',
+#       );
+#
+#        my @result = &fe( @data[^600].&to-json ).&from-json;
+
+
         my &fe = llm-example-function(
-            ['John Smith', 'Kylie Minogue', 'Mikejennion', 'Andreaglenister'].&to-json =>
-                '["John", "Kylie", "Mike", "Andrea"]'  ,
-            hint => 'please extract valid first names from this list of inputs',
-            hint => 'no, Andreaglenister is not a valid firstname, should be Andrea, and so on',
-#            hint => 'no, Garethaus is not a valid firstname, should be Gareth, and so on',
-            #            hint => 'Mikejennion is wrong, should be Mike Jennion, and so on',
+            ['tomp', 'Kylie.Minogue', 'Mikejennion', 'Andrea_glenister', 'david-bowie', 'J', 'Db', 'Stevec', 'Fionac'].&to-json =>
+                '["Tom", "John", "Kylie", "Mike", "Andrea", "David", "none", "none", "Steve", "Fiona"]'  ,
+            hint => 'please extract valid first names from this list of string inputs',
+            hint => 'please use the string none if you have no good result',
+        );
 
-            #            hint => 'sometimes there is no space between first and last names',
-       );
+        my $jump = 64;
+        my $last = +@data;
 
-        my @result = &fe( @data[^40].&to-json ).&from-json;
+        my @starts = (0, $jump, ($jump*2) ... $last);
+        my @ends = @starts.clone.splice(1).push($last).map(*-1);
+        my @ranges = @starts Z.. @ends;
 
-        for @result -> $datum is rw {
-            $datum.subst: %fixes;
+        my @culls = <
+            Apprentice
+            Street
+            Newbury
+            Commercial
+            Comercial
+            Info
+            lynch
+            Abray
+            Iblake
+            Pmoss
+            Arouse
+            Sward
+            Zwest
+            Shop
+        >;
+
+        sub do-batch( $r ) {
+            say $r;
+
+            my @result = &fe( @data[|$r].&to-json ).&from-json;
+
+            for @result -> $datum is rw {
+                for @culls -> $cull {
+                    my $regex = rx:i/.* $cull .*/;
+                    $datum .= subst( $regex, 'none' );
+                }
+                $datum .= tc unless $datum eq 'none';
+                $datum = 'none' if $datum.chars < 3;
+            }
+
+            ddt @result;
         }
 
-        ddt @result;
+#        @ranges.map(*.&do-batch)
+        @ranges[*-2].&do-batch;
+
     }
 }
 
